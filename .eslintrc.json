@@ -1,0 +1,9 @@
+{
+  "extends": ["react-app", "plugin:prettier/recommended"],
+  "globals": {
+    "context": "readonly"
+  },
+  "rules": {
+    "react/prop-types": "error"
+  }
+}

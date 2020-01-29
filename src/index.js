@@ -1,12 +1,30 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import { combineReducers, createStore, applyMiddleware } from "redux";
+import { composeWithDevTools } from "redux-devtools-extension/logOnlyInProduction";
+import createSagaMiddleware from "redux-saga";
+import { all } from "redux-saga/effects";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
+import counter from "./redux/counter";
+import counterSagas from "./redux/counterSagas";
+import App from "./components/App";
 
-ReactDOM.render(<App />, document.getElementById('root'));
+function* sagas() {
+  yield all([counterSagas()]);
+}
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+const reducer = combineReducers({ counter });
+const sagaMiddleware = createSagaMiddleware();
+const enhancer = composeWithDevTools(applyMiddleware(sagaMiddleware));
+const store = createStore(reducer, enhancer);
+sagaMiddleware.run(sagas);
+
+ReactDOM.render(
+  <Provider store={store}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </Provider>,
+  document.getElementById("root")
+);

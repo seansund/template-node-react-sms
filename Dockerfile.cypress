@@ -1,0 +1,11 @@
+# Lint, unit test, build, and acceptance test on a Cypress-ready Debian base.
+FROM cypress/base:10.16.0 AS build
+WORKDIR /home/node/app
+COPY . .
+RUN npm install
+RUN npm run lint && npm run test:ci && npm run cypress:run && npm run build
+
+# Copy configuration and content to unprivileged NGINX base.
+FROM nginxinc/nginx-unprivileged:1.17.2-alpine
+COPY --from=build /home/node/app/nginx /etc/nginx
+COPY --from=build /home/node/app/build /usr/share/nginx/html
