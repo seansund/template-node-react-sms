@@ -115,7 +115,7 @@ spec:
             }
             stage('Test') {
                 sh '''#!/bin/bash
-                    npm test
+                    CI=true npm test
                 '''
             }
             stage('Publish pacts') {
